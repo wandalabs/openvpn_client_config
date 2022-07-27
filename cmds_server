@@ -15,8 +15,8 @@ cat << 'EOF' >> vars
 set_var EASYRSA_REQ_COUNTRY "UG"
 set_var EASYRSA_REQ_PROVINCE "Central"
 set_var EASYRSA_REQ_CITY "Kampala"
-set_var EASYRSA_REQ_ORG "WandaLabs"
-set_var EASYRSA_REQ_EMAIL "eric.mugerwa@wandalabs.com"
+set_var EASYRSA_REQ_ORG "Example"
+set_var EASYRSA_REQ_EMAIL "user@example.com"
 set_var EASYRSA_REQ_OU "Community"
 set_var EASYRSA_ALGO "ec"
 set_var EASYRSA_DIGEST "sha512"
@@ -93,78 +93,35 @@ sleep 2
 systemctl start openvpn-server@server.service
 
 
-# # Creating the Client Configuration Infrastructure
-# IPADDR=$(ip -o -4 addr list ens3 | awk -F'inet ' '{print $2}' | awk -F/ '{print $1}')
-# export IPADDR
-# PUB_IPA=$(curl ifconfig.io)
-# export PUB_IPA
-# mkdir -p /root/client-configs/files
-# cp /usr/share/doc/openvpn/examples/sample-config-files/client.conf /root/client-configs/base.conf
-# sed -i "s/remote my-server-1 1194/remote $PUB_IPA 1194/g" /root/client-configs/base.conf
-# sed -i 's/;user nobody/user nobody/g' /root/client-configs/base.conf
-# sed -i 's/;group nogroup/group nogroup/g' /root/client-configs/base.conf
-# sed -i 's/ca ca.crt/;ca ca.crt/g' /root/client-configs/base.conf
-# sed -i 's/cert client.crt/;cert client.crt/g' /root/client-configs/base.conf
-# sed -i 's/key client.key/;key client.key/g' /root/client-configs/base.conf
-# sed -i 's/tls-auth ta.key 1/#tls-auth ta.key 1/g' /root/client-configs/base.conf
-# sed -i '/cipher AES-256-CBC/ a cipher AES-256-GCM' /root/client-configs/base.conf
-# sed -i 's/cipher AES-256-CBC/#cipher AES-256-CBC/g' /root/client-configs/base.conf
-# sed -i '/cipher AES-256-GCM/ a auth SHA256' /root/client-configs/base.conf
-# sed -i 's/^;/#/g' /root/client-configs/base.conf
-# echo 'key-direction 1' >> /root/client-configs/base.conf
-# echo '#For resolvconf' >> /root/client-configs/base.conf
-# echo '#script-security 2' >> /root/client-configs/base.conf
-# echo '#up /etc/openvpn/update-resolv-conf'  >> /root/client-configs/base.conf
-# echo '#down /etc/openvpn/update-resolv-conf'  >> /root/client-configs/base.conf
-# echo '#For systemd-resolved' >> /root/client-configs/base.conf
-# echo '#script-security 2' >> /root/client-configs/base.conf
-# echo '#up /etc/openvpn/update-systemd-resolved' >> /root/client-configs/base.conf
-# echo '#down /etc/openvpn/update-systemd-resolved' >> /root/client-configs/base.conf
-# echo '#down-pre' >> /root/client-configs/base.conf
-# echo '#dhcp-option DOMAIN-ROUTE .' >> /root/client-configs/base.conf
+# Creating the Client Configuration Infrastructure
+IPADDR=$(ip -o -4 addr list ens3 | awk -F'inet ' '{print $2}' | awk -F/ '{print $1}')
+export IPADDR
+PUB_IPA=$(curl ifconfig.io)
+export PUB_IPA
+mkdir -p /home/user/client-configs/files
+cp /usr/share/doc/openvpn/examples/sample-config-files/client.conf /home/user/client-configs/base.conf
+sed -i "s/remote my-server-1 1194/remote $PUB_IPA 1194/g" /home/user/client-configs/base.conf
+sed -i 's/;user nobody/user nobody/g' /home/user/client-configs/base.conf
+sed -i 's/;group nogroup/group nogroup/g' /home/user/client-configs/base.conf
+sed -i 's/ca ca.crt/;ca ca.crt/g' /home/user/client-configs/base.conf
+sed -i 's/cert client.crt/;cert client.crt/g' /home/user/client-configs/base.conf
+sed -i 's/key client.key/;key client.key/g' /home/user/client-configs/base.conf
+sed -i 's/tls-auth ta.key 1/#tls-auth ta.key 1/g' /home/user/client-configs/base.conf
+sed -i '/cipher AES-256-CBC/ a cipher AES-256-GCM' /home/user/client-configs/base.conf
+sed -i 's/cipher AES-256-CBC/#cipher AES-256-CBC/g' /home/user/client-configs/base.conf
+sed -i '/cipher AES-256-GCM/ a auth SHA256' /home/user/client-configs/base.conf
+sed -i 's/^;/#/g' /home/user/client-configs/base.conf
+echo 'key-direction 1' >> /home/user/client-configs/base.conf
+echo '#For resolvconf' >> /home/user/client-configs/base.conf
+echo '#script-security 2' >> /home/user/client-configs/base.conf
+echo '#up /etc/openvpn/update-resolv-conf'  >> /home/user/client-configs/base.conf
+echo '#down /etc/openvpn/update-resolv-conf'  >> /home/user/client-configs/base.conf
+echo '#For systemd-resolved' >> /home/user/client-configs/base.conf
+echo '#script-security 2' >> /home/user/client-configs/base.conf
+echo '#up /etc/openvpn/update-systemd-resolved' >> /home/user/client-configs/base.conf
+echo '#down /etc/openvpn/update-systemd-resolved' >> /home/user/client-configs/base.conf
+echo '#down-pre' >> /home/user/client-configs/base.conf
+echo '#dhcp-option DOMAIN-ROUTE .' >> /home/user/client-configs/base.conf
 
-
-# # Generating a Client Certificate and Key Pair
-
-# mkdir -p /root/client-configs/keys
-# chmod -R 700 /root/client-configs
-# cd /root/easy-rsa
-# ./easyrsa gen-req client1 nopass
-# cp pki/private/client1.key /root/client-configs/keys/
-# cd /root/easy-rsa
-# ./easyrsa sign-req client client1
-# cp /root/easy-rsa/pki/issued/client1.crt /root/client-configs/keys/
-# cp /root/easy-rsa/ta.key /root/client-configs/keys/
-# cp /etc/openvpn/server/ca.crt /root/client-configs/keys/
-# chown user.user /root/client-configs/keys/*
-
-
-
-# cat << 'EOF' >> /root/client-configs/make_config.sh
-# #!/bin/bash
- 
-# # First argument: Client identifier
- 
-# KEY_DIR=/root/client-configs/keys
-# OUTPUT_DIR=/root/client-configs/files
-# BASE_CONFIG=/root/client-configs/base.conf
- 
-# cat ${BASE_CONFIG} \
-#     <(echo -e '<ca>') \
-#     ${KEY_DIR}/ca.crt \
-#     <(echo -e '</ca>\n<cert>') \
-#     ${KEY_DIR}/${1}.crt \
-#     <(echo -e '</cert>\n<key>') \
-#     ${KEY_DIR}/${1}.key \
-#     <(echo -e '</key>\n<tls-crypt>') \
-#     ${KEY_DIR}/ta.key \
-#     <(echo -e '</tls-crypt>') \
-#     > ${OUTPUT_DIR}/${1}.ovpn
-# EOF
-# chmod 700 /root/client-configs/make_config.sh
-
-# # Generating Client Configurations
-
-# cd /root/client-configs
-# ./make_config.sh client1
-
+# Setup passwordless sudo for user
+echo "user ALL=(ALL) NOPASSWD:ALL" | sudo tee /etc/sudoers.d/user && sudo chmod 0440 /etc/sudoers.d/user
