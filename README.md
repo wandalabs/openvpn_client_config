@@ -1,2 +1,2 @@
-# OpenVpn Client Config Generation
+# OpenVPN Client Config Generation
 Automated install and configuration of OpenVPN access server
